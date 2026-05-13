@@ -1,15 +1,24 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: MoodTunes API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: songs
+    description: Song operations
+  - name: moods
+    description: Mood operations
+  - name: users
+    description: User operations
+  - name: playlists
+    description: Playlist operations
+  - name: mood-history
+    description: Mood history tracking
 paths:
   /healthz:
     get:
@@ -24,6 +33,371 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /songs:
+    get:
+      operationId: getSongs
+      tags: [songs]
+      summary: Get songs
+      parameters:
+        - name: mood
+          in: query
+          schema:
+            type: string
+        - name: genre
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of songs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Song"
+
+  /songs/{id}:
+    get:
+      operationId: getSong
+      tags: [songs]
+      summary: Get a song by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Song
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Song"
+        "404":
+          description: Not found
+
+  /songs/{id}/related:
+    get:
+      operationId: getRelatedSongs
+      tags: [songs]
+      summary: Get related songs based on a song
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Related songs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Song"
+
+  /songs/trending:
+    get:
+      operationId: getTrendingSongs
+      tags: [songs]
+      summary: Get trending songs
+      responses:
+        "200":
+          description: Trending songs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Song"
+
+  /moods:
+    get:
+      operationId: getMoods
+      tags: [moods]
+      summary: Get all available moods
+      responses:
+        "200":
+          description: List of moods
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Mood"
+
+  /moods/detect:
+    post:
+      operationId: detectMood
+      tags: [moods]
+      summary: Detect mood from text
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MoodDetectInput"
+      responses:
+        "200":
+          description: Detected mood
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MoodDetectResult"
+
+  /users/me:
+    get:
+      operationId: getMe
+      tags: [users]
+      summary: Get current user profile
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Not authenticated
+
+  /users/me/favorites:
+    get:
+      operationId: getFavorites
+      tags: [users]
+      summary: Get user's favorite songs
+      responses:
+        "200":
+          description: Favorite songs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Song"
+
+  /users/me/favorites/{songId}:
+    post:
+      operationId: addFavorite
+      tags: [users]
+      summary: Add a song to favorites
+      parameters:
+        - name: songId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FavoriteResult"
+    delete:
+      operationId: removeFavorite
+      tags: [users]
+      summary: Remove a song from favorites
+      parameters:
+        - name: songId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Removed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FavoriteResult"
+
+  /users/me/recently-played:
+    get:
+      operationId: getRecentlyPlayed
+      tags: [users]
+      summary: Get recently played songs
+      responses:
+        "200":
+          description: Recently played
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RecentlyPlayed"
+    post:
+      operationId: recordPlay
+      tags: [users]
+      summary: Record a song play
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecordPlayInput"
+      responses:
+        "200":
+          description: Recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecentlyPlayed"
+
+  /playlists:
+    get:
+      operationId: getPlaylists
+      tags: [playlists]
+      summary: Get user's playlists
+      responses:
+        "200":
+          description: Playlists
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Playlist"
+    post:
+      operationId: createPlaylist
+      tags: [playlists]
+      summary: Create a playlist
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlaylistInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Playlist"
+
+  /playlists/{id}:
+    get:
+      operationId: getPlaylist
+      tags: [playlists]
+      summary: Get a playlist with its songs
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Playlist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlaylistDetail"
+    delete:
+      operationId: deletePlaylist
+      tags: [playlists]
+      summary: Delete a playlist
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResult"
+
+  /playlists/{id}/songs/{songId}:
+    post:
+      operationId: addSongToPlaylist
+      tags: [playlists]
+      summary: Add a song to a playlist
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: songId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResult"
+
+  /mood-history:
+    get:
+      operationId: getMoodHistory
+      tags: [mood-history]
+      summary: Get user's mood history
+      responses:
+        "200":
+          description: Mood history entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MoodHistoryEntry"
+    post:
+      operationId: recordMood
+      tags: [mood-history]
+      summary: Record a mood entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MoodHistoryInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MoodHistoryEntry"
+
+  /mood-history/stats:
+    get:
+      operationId: getMoodStats
+      tags: [mood-history]
+      summary: Get mood frequency stats for the current user
+      responses:
+        "200":
+          description: Mood stats
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MoodStat"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +408,194 @@ components:
       required:
         - status
 
+    Song:
+      type: object
+      required: [id, title, artist, mood, genre, duration, coverUrl, audioPreviewUrl]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        artist:
+          type: string
+        mood:
+          type: string
+        genre:
+          type: string
+        duration:
+          type: integer
+          description: Duration in seconds
+        coverUrl:
+          type: string
+        audioPreviewUrl:
+          type: ["string", "null"]
+        liked:
+          type: boolean
+        playCount:
+          type: integer
+
+    Mood:
+      type: object
+      required: [id, name, emoji, color, description]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        emoji:
+          type: string
+        color:
+          type: string
+        description:
+          type: string
+
+    MoodDetectInput:
+      type: object
+      required: [text]
+      properties:
+        text:
+          type: string
+          minLength: 1
+
+    MoodDetectResult:
+      type: object
+      required: [mood, confidence]
+      properties:
+        mood:
+          type: string
+        confidence:
+          type: number
+        message:
+          type: string
+
+    User:
+      type: object
+      required: [id, username, isGuest]
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: ["string", "null"]
+        avatarUrl:
+          type: ["string", "null"]
+        isGuest:
+          type: boolean
+        createdAt:
+          type: string
+
+    FavoriteResult:
+      type: object
+      required: [success, liked]
+      properties:
+        success:
+          type: boolean
+        liked:
+          type: boolean
+
+    RecentlyPlayed:
+      type: object
+      required: [id, song, playedAt]
+      properties:
+        id:
+          type: integer
+        song:
+          $ref: "#/components/schemas/Song"
+        playedAt:
+          type: string
+
+    RecordPlayInput:
+      type: object
+      required: [songId]
+      properties:
+        songId:
+          type: integer
+
+    Playlist:
+      type: object
+      required: [id, name, songCount, coverUrl]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: ["string", "null"]
+        songCount:
+          type: integer
+        coverUrl:
+          type: ["string", "null"]
+        mood:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    PlaylistDetail:
+      type: object
+      required: [id, name, songs]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: ["string", "null"]
+        mood:
+          type: ["string", "null"]
+        songs:
+          type: array
+          items:
+            $ref: "#/components/schemas/Song"
+        createdAt:
+          type: string
+
+    PlaylistInput:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        mood:
+          type: string
+
+    DeleteResult:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+
+    MoodHistoryEntry:
+      type: object
+      required: [id, mood, recordedAt]
+      properties:
+        id:
+          type: integer
+        mood:
+          type: string
+        note:
+          type: ["string", "null"]
+        recordedAt:
+          type: string
+
+    MoodHistoryInput:
+      type: object
+      required: [mood]
+      properties:
+        mood:
+          type: string
+        note:
+          type: string
+
+    MoodStat:
+      type: object
+      required: [mood, count]
+      properties:
+        mood:
+          type: string
+        count:
+          type: integer

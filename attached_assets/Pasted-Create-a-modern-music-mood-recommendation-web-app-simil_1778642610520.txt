@@ -1,0 +1,96 @@
+Create a modern music mood recommendation web app similar to Spotify called “MoodTunes”.
+The app should have a beautiful dark UI with smooth animations, glowing gradients, and a clean responsive layout.
+Use React + Tailwind CSS for frontend and Node.js/Express for backend.
+The app should feel premium like Spotify.
+
+Features required:
+
+Landing Page
+Stylish hero section
+App logo and tagline
+“Get Started” button
+Animated background particles/music waves
+Mood Selection
+Ask the user:
+“How are you feeling today?”
+Provide mood cards with emojis and animations:
+Happy 😊
+Sad 😔
+Relaxed 😌
+Angry 😤
+Motivated 💪
+Romantic ❤️
+Energetic ⚡
+Lonely 🌧️
+Party 🎉
+Song Recommendation System
+Recommend songs/playlists based on selected mood
+Show:
+Song cover image
+Song name
+Artist
+Mood tag
+Duration
+Add embedded Spotify previews if possible
+Include play/pause buttons
+Add like/favorite option
+AI Recommendation Logic
+Use simple AI-like recommendation logic
+Suggest similar songs dynamically
+If user likes a song, recommend related songs
+Store liked songs locally
+Search Feature
+Search songs/artists
+Filter by mood or genre
+Music Player
+Create a mini Spotify-like player:
+Play/Pause
+Next/Previous
+Progress bar
+Volume control
+Animated album rotation while playing
+User Features
+Login/Signup page
+Guest mode
+User profile
+Recently played songs
+Favorite playlist section
+Extra Creative Features
+“Mood Detector” text box where user types feelings and AI predicts mood
+Daily mood tracking graph
+Dynamic background color changes according to mood
+Floating music visualizer
+Animated loading screens
+Backend
+Store users, favorites, playlists, and mood history
+Use MongoDB
+Create proper API routes
+Keep code clean and modular
+UI/UX
+Smooth transitions
+Modern cards with hover effects
+Mobile responsive
+Spotify-inspired design but unique
+Use Framer Motion animations
+Important
+Everything should work properly
+No placeholder buttons
+No broken pages
+Add sample songs/playlists automatically
+Write clean production-ready code
+Organize files properly
+Include comments for important logic
+Bonus
+Add dark/light mode
+Add trending songs section
+Add AI chatbot music assistant
+Add lyrics popup
+Add share playlist feature
+
+At the end:
+
+Generate complete working code
+Include setup instructions
+Include package installation commands
+Include environment variable setup
+Make the app ready to run directly in Replit without errors.
